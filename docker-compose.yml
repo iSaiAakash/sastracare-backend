@@ -1,0 +1,31 @@
+services:
+
+  api:
+    build: .
+    container_name: sastracare-api
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: sastracare-postgres
+    environment:
+      POSTGRES_DB: sastracare
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    container_name: sastracare-redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  pgdata:
