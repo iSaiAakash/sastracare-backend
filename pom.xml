@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com</groupId>
-	<artifactId>sastracare</artifactId>
+	<artifactId>sastracare-api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>parentacademic</name>
+	<name>sastracare</name>
 	<description>parent academic system</description>
 	<url/>
 	<licenses>
@@ -85,7 +85,7 @@
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt-impl</artifactId>
-			<version>0.11.5</version>
+			<version>0.12.6</version>
 			<scope>runtime</scope>
 		</dependency>
 
@@ -134,7 +134,6 @@
 			<artifactId>twilio</artifactId>
 			<version>11.3.4</version>
 		</dependency>
-
 
 	</dependencies>
 
