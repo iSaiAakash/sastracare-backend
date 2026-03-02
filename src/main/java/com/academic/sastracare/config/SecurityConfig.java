@@ -36,17 +36,17 @@ public class SecurityConfig {
                 // Enable CORS
                 .cors(Customizer.withDefaults())
 
-                // Disable default Spring mechanisms
+                // Disable default Spring Security mechanisms
                 .csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
 
-                // Stateless JWT
+                // Stateless session (JWT)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                // Custom exception handling
+                // Exception handling
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(authEntryPoint)
                         .accessDeniedHandler(accessDeniedHandler)
@@ -54,12 +54,15 @@ public class SecurityConfig {
 
                 // Authorization rules
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/api/**").authenticated()
+                        .requestMatchers("/").permitAll()                     // health/root
+                        .requestMatchers("/auth/**").permitAll()              // login/otp
+                        .requestMatchers("/actuator/**").permitAll()          // optional
+                        .requestMatchers("/api/**").authenticated()           // protected APIs
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().denyAll()
                 )
 
-                // Add JWT filter
+                // Add JWT filter before UsernamePasswordAuthenticationFilter
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
 
                 // Security headers
@@ -74,16 +77,17 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // CORS configuration
+    // Proper CORS configuration
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOriginPatterns(List.of("*")); // change in production
+        // DO NOT use "*" with allowCredentials(true)
+        configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false); // safer default
 
         UrlBasedCorsConfigurationSource source =
                 new UrlBasedCorsConfigurationSource();
